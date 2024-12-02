@@ -31,7 +31,6 @@ def exclude_index(levels, index)
 end
 
 def safe?(levels)
-  # find_first_unsafe_index(levels) || (0..levels.count.pred).any? { !find_first_unsafe_index(exclude_index(levels, _1)) }
   first_unsafe = find_first_unsafe_index(levels)
   !first_unsafe || (0..first_unsafe).any? { !find_first_unsafe_index(exclude_index(levels, _1)) }
 end
