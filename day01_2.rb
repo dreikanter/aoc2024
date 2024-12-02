@@ -1,4 +1,4 @@
-list1, list2 = File.read("./data.txt")
+list1, list2 = File.read("./day1_data.txt")
   .split("\n")
   .map { _1.split(/\s+/) }
   .map { [Integer(_1), Integer(_2)] }
