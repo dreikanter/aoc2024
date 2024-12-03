@@ -6,7 +6,7 @@ end
 
 # No zeroes in the input data
 def altering_sign?(value, other)
-  value.positive? ^ other.positive?
+  value.positive? != other.positive?
 end
 
 def out_of_range?(value)
