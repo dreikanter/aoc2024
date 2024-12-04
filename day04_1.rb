@@ -2,7 +2,6 @@ WORD = "XMAS"
 WORD_VARIATIONS = /(?=(#{WORD}|#{WORD.reverse}))/
 
 rows = File.read("./day04_data.txt").split("\n").map(&:chars)
-# rows = File.read("./day04_data_test.txt").split("\n").map(&:chars)
 
 width = rows.first.length
 height = rows.length
