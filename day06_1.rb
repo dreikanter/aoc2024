@@ -69,7 +69,7 @@ class Guard
   end
 end
 
-data = File.read("./day06_1_test_data.txt").split("\n").map(&:chars)
+data = File.read("./day06_1_data.txt").split("\n").map(&:chars)
 
 initial_y = data.find_index { _1.include? "^" }
 initial_x = data[initial_y].find_index { _1 == "^" }
