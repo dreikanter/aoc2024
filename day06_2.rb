@@ -1,28 +1,21 @@
 class Lab
-  attr_reader :data
+  attr_reader :data, :obstacle_position
 
   FREE = "."
   OBSTACLE = "#"
-  NEW_OBSTACLE = "O"
 
-  def initialize(data)
+  def initialize(data, obstacle_position = nil)
     @data = data
+    @obstacle_position = obstacle_position
   end
 
-  def obstacle?(x, y)
-    value = data.dig(y, x)
-    value == OBSTACLE || value == NEW_OBSTACLE
+  def obstacle?(position)
+    x, y = position
+    data.dig(y, x) == OBSTACLE || position == obstacle_position
   end
 
-  def set_obstacle(x, y)
-    data[y][x] = NEW_OBSTACLE
-  end
-
-  def remove_obstacle(x, y)
-    data[y][x] = FREE
-  end
-
-  def outside?(x, y)
+  def outside?(position)
+    x, y = position
     x < 0 || x >= width || y < 0 || y >= height
   end
 
@@ -36,19 +29,17 @@ class Lab
 end
 
 class Guard
-  attr_reader :x, :y, :dx, :dy, :distinct_positions, :trajectory
+  attr_reader :x, :y, :dx, :dy, :visited
 
   UP = [0, -1]
   DOWN = [0, 1]
   LEFT = [-1, 0]
   RIGHT = [1, 0]
 
-  def initialize(x, y)
-    @x = x
-    @y = y
+  def initialize(initial_position)
+    @x, @y = initial_position
     @dx, @dy = UP
-    @distinct_positions = Set.new([[x, y]])
-    @trajectory = [[x, y]]
+    @visited = Set.new([[x, y, dx, dy]])
   end
 
   def turn_right
@@ -77,48 +68,55 @@ class Guard
   def move
     @x += dx
     @y += dy
-    @distinct_positions << position
-    @trajectory << position
+    visited << state
   end
 
   def looped?
-    length = trajectory.length
-    return false if length < 2
+    visited.include?([x + dx, y + dy, dx, dy])
+  end
 
-    (2..length / 2).any? do |loop_length|
-      (0...loop_length).all? { trajectory[length - loop_length + _1] == trajectory[length - 2 * loop_length + _1] }
-    end
+  def state
+    [x, y, dx, dy]
   end
 end
 
-def for_each_possible_obstacle_position(data, initial_x, initial_y)
-  lab = Lab.new(data)
-  yield lab
+def for_each_possible_obstacle_position(data, initial_position)
+  original = Lab.new(data)
+  yield original
 
-  (0...lab.width).each do |x|
-    (0...lab.height).each do |y|
-      next if lab.obstacle?(x, y) || (x == initial_x && y == initial_y)
-      lab.set_obstacle(x, y)
-      yield lab
-      lab.remove_obstacle(x, y)
+  (0...original.width).each do |x|
+    (0...original.height).each do |y|
+      obstacle_position = [x, y]
+      yield Lab.new(data, obstacle_position) unless original.obstacle?(obstacle_position) || obstacle_position == initial_position
     end
   end
 end
 
 data = File.read("./day06_data.txt").split("\n").map(&:chars)
+# data = File.read("./day06_test_data.txt").split("\n").map(&:chars)
 
 initial_y = data.find_index { _1.include? "^" }
 initial_x = data[initial_y].find_index { _1 == "^" }
+initial_position = [initial_x, initial_y]
 
 looping_obstacles_count = 0
 
-for_each_possible_obstacle_position(data, initial_x, initial_y) do |lab|
-  guard = Guard.new(initial_x, initial_y)
+for_each_possible_obstacle_position(data, initial_position) do |lab|
+  guard = Guard.new(initial_position)
 
   loop do
-    break if lab.outside?(*guard.next_position)
-    break looping_obstacles_count += 1 if guard.looped?
-    lab.obstacle?(*guard.next_position) ? guard.turn_right : guard.move
+    break if lab.outside?(guard.next_position)
+
+    if lab.obstacle?(guard.next_position)
+      guard.turn_right
+    else
+      if guard.looped?
+        looping_obstacles_count += 1
+        break
+      end
+
+      guard.move
+    end
   end
 end
 
