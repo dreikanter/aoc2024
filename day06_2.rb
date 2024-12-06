@@ -10,7 +10,8 @@ class Lab
   end
 
   def obstacle?(x, y)
-    data.dig(y, x) == OBSTACLE || data.dig(y, x) == NEW_OBSTACLE
+    value = data.dig(y, x)
+    value == OBSTACLE || value == NEW_OBSTACLE
   end
 
   def set_obstacle(x, y)
@@ -98,9 +99,6 @@ def for_each_possible_obstacle_position(data, initial_x, initial_y)
     (0...lab.height).each do |y|
       next if lab.obstacle?(x, y) || (x == initial_x && y == initial_y)
       lab.set_obstacle(x, y)
-      puts "set_obstacle #{[x, y]}"
-      puts lab.data.map { _1.join }.join("\n")
-      puts
       yield lab
       lab.remove_obstacle(x, y)
     end
