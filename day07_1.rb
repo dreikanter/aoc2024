@@ -24,10 +24,7 @@ equations.each do |expected, operands|
       break if result > expected
     end
 
-    if result == expected
-      sum += result
-      break
-    end
+    break sum += result if result == expected
   end
 end
 

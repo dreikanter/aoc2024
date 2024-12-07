@@ -20,7 +20,7 @@ equations.each do |expected, operands|
         result += operand
       when "*"
         result *= operand
-      when "||"
+      else
         result = (result.to_s + operand.to_s).to_i
       end
 
