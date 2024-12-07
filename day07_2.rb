@@ -9,7 +9,7 @@ OPERATORS = %w[+ * ||]
 sum = 0
 
 equations.each do |expected, operands|
-  OPERATORS.repeated_permutation(operands.length.pred).each_with_index do |operators, index|
+  OPERATORS.repeated_permutation(operands.length.pred).each do |operators|
     result = operands.first
 
     operators.each_with_index do |operator, index|
