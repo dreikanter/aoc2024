@@ -12,7 +12,7 @@ antennas = {}
   end
 end
 
-within_boundaries = -> (x, y) { !x.negative? && !y.negative? && x < width && y < height }
+within_boundaries = -> (x, y) { (0...width).include?(x) && (0...height).include?(y) }
 antinodes = Set.new
 
 antennas.each do |frequency, locations|
