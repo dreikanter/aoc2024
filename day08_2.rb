@@ -18,15 +18,15 @@ antinodes = Set.new
 antennas.each do |frequency, locations|
   next if locations.length < 2
 
-  locations.combination(2).each do |antenna1, antenna2|
-    dx = antenna1[0] - antenna2[0]
-    dy = antenna1[1] - antenna2[1]
+  locations.combination(2).each do |(x1, y1), (x2, y2)|
+    dx = x1 - x2
+    dy = y1 - y2
 
     [1, -1].each do |direction|
       multiplier = 0
 
       loop do
-        antinode = [antenna1[0] + dx * multiplier, antenna1[1] + dy * multiplier]
+        antinode = [x1 + dx * multiplier, y1 + dy * multiplier]
         break unless within_boundaries.call(*antinode)
         antinodes << antinode
         multiplier += direction

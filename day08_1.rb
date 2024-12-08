@@ -16,19 +16,8 @@ within_boundaries = -> (x, y) { (0...width).include?(x) && (0...height).include?
 antinodes = Set.new
 
 antennas.each do |frequency, locations|
-  locations.combination(2).each do |antenna1, antenna2|
-    x1, y1 = antenna1
-    x2, y2 = antenna2
-
-    dx = x1 - x2
-    dy = y1 - y2
-
-    antinodes +=  [
-      [x1 + dx, y1 + dy],
-      [x1 - dx, y1 - dy],
-      [x2 + dx, y2 + dy],
-      [x2 - dx, y2 - dy]
-    ].filter { antenna1 != _1 && antenna2 != _1 && within_boundaries.call(*_1) }
+  locations.combination(2).each do |(x1, y1), (x2, y2)|
+    antinodes +=  [[2 * x1 - x2, 2 * y1 - y2], [2 * x2 - x1, 2 * y2 - y1]].filter { within_boundaries.call(*_1) }
   end
 end
 
