@@ -8,8 +8,7 @@ antennas = {}
 (0...width).each do |x|
   (0...height).each do |y|
     frequency = map[y][x]
-    next if frequency == "."
-    (antennas[frequency] ||= []) << [x, y]
+    (antennas[frequency] ||= []) << [x, y] unless frequency == "."
   end
 end
 
@@ -18,14 +17,17 @@ antinodes = Set.new
 
 antennas.each do |frequency, locations|
   locations.combination(2).each do |antenna1, antenna2|
-    dx = antenna1[0] - antenna2[0]
-    dy = antenna1[1] - antenna2[1]
+    x1, y1 = antenna1
+    x2, y2 = antenna2
+
+    dx = x1 - x2
+    dy = y1 - y2
 
     antinodes +=  [
-      [antenna1[0] + dx, antenna1[1] + dy],
-      [antenna1[0] - dx, antenna1[1] - dy],
-      [antenna2[0] + dx, antenna2[1] + dy],
-      [antenna2[0] - dx, antenna2[1] - dy]
+      [x1 + dx, y1 + dy],
+      [x1 - dx, y1 - dy],
+      [x2 + dx, y2 + dy],
+      [x2 - dx, y2 - dy]
     ].filter { antenna1 != _1 && antenna2 != _1 && within_boundaries.call(*_1) }
   end
 end
